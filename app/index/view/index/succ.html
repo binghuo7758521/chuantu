@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{:__STATIC__}css/bootstrap.css">
+    <style type="text/css">
+        .m-con{
+            padding-top: 20px;
+        }
+        .m-item{
+            margin-bottom: 15px;
+        }
+        .m-con p{
+            margin-bottom: .1rem;
+        }
+        .btn-primary{
+            background-color: #00b7ef;
+            border-color: #00b7ef;
+        }
+        .m-block{
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .m-sub-tl{
+            color: #8a8a8a;
+            font-size: 12px;
+        }
+        .m-tips{
+            color: #f00;
+            padding-bottom: 10px;
+        }
+        .indexpage{
+            min-height: 100vh;
+            background-image: url(../images/indexbg.png);
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+    </style>
+
+    <title>完成</title>
+<body>
+<div class="container">
+    <div class="m-con">
+        <p class="m-tips">请记录单号并与客服联系，谢谢！</p>
+        <div class="m-block">
+            <p class="m-sub-tl">单号：</p>
+            <p>{$order}</p>
+        </div>
+        <div class="m-block">
+            <p class="m-sub-tl">打印尺寸：</p>
+            <p>{$size}</p>
+        </div>
+        <div class="m-block">
+            <p class="m-sub-tl">总张数</p>
+            <p>{$num}</p>
+        </div>
+
+        <div class="m-item">
+            <button type="button" class="btn btn-primary btn-block">OK</button>
+        </div>
+    </div>
+</div>
+<script src="{:__STATIC__}js/jquery.js"></script>
+<script src="{:__STATIC__}js/bootstrap.js"></script>
+<script>
+    $('.btn').click(function () {
+        window.location = "{:url('index/index')}";
+    })
+</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="shortcut icon" href="{:__STATIC__}favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="{:__STATIC__}css/font.css">
+    <link rel="stylesheet" href="{:__STATIC__}css/xadmin.css">
+    <link rel="stylesheet" href="{:__STATIC__}css/folder.css">
+    <link rel="stylesheet" href="{:__STATIC__}css/bootstrap.min.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{:__STATIC__}js/jquery_003.js" charset="utf-8"></script>
+    <script type="text/javascript" src="{:__STATIC__}lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="{:__STATIC__}js/xadmin.js"></script>
+    <script type="text/javascript" src="{:__STATIC__}js/jquery.contextify.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body id="body"  style="position:absolute;top:0px;left:0px;right:0px;bottom:0px">
+<div class="x-nav">
+      <!--<span class="layui-breadcrumb">-->
+        <!--<a href="">首页</a>-->
+        <!--<a href="">演示</a>-->
+        <!--<a>-->
+            <!--<cite>导航元素</cite></a>-->
+      <!--</span>-->
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+<div class="x-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" method="get" action="">
+            <input class="layui-input" placeholder="开始日" name="start" id="start">
+            <input class="layui-input" placeholder="截止日" name="end" id="end">
+            <input type="text" name="username" placeholder="单号" autocomplete="off" class="layui-input">
+            <input type="text" name="mobile" placeholder="手机号" autocomplete="off" class="layui-input">
+            <div class="layui-input-inline">
+                <select name="down_tag">
+                    <option value="0">下载状态</option>
+                    <option value="2">已下载</option>
+                    <option value="1">未下载</option>
+                </select>
+            </div>
+            <button class="layui-btn" lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <div class="page" style="margin-bottom: 20px;">
+        <div class="alldom" id="all_folder">
+            <ul id="divall">
+                {foreach $zip_arr as $key=>$vo }
+                    <!--<li class="folder" title="{$vo.img_dir}" index="{$key}"><input type="text" class="changename" value="{$vo.img_dir}" data-id="{$vo.id}"></li>-->
+                    <li id="downzip" class="folder" title="{$vo.img_dir}" data-id="{$vo.id}" style="background: url({$vo.bg}) center top no-repeat"><p class="changename" id="{$key}">{$vo.img_dir}</p></li>
+                {/foreach}
+            </ul>
+        </div>
+        <div style="clear: both"></div>
+    </div>
+
+    <div class="page">
+        {$page|raw}
+    </div>
+    {if $show_del_bat }
+    <div><button class="layui-btn"  onclick="del_rubbish()">数据清理最早的10个文件夹</button></div>
+    {else /}
+    {/if}
+
+</div>
+<script>
+    $(function(){
+        $('.folder').mousedown(function(e){
+            var id = $(this)[0].dataset.id;
+            var options = {items:[
+                {header: '功能'},
+                {divider: true},
+                {text: '下载', onclick: function() {downZip(id)}},
+                {text: '删除', onclick: function() {delZip(id)}},
+                {text: '已下载', onclick: function() {downedZip(id)}},
+                {text: '未下载', onclick: function() {nodownedZip(id)}}
+            ]};
+
+            if(e.button === 0) {
+                window.location.href="{:url('admin/imglist')}"+'?id='+id;
+            }
+            if(e.button === 2) {
+                $(this).contextify(options);
+            }
+        })
+    });
+
+    //下载
+    function downZip(id){
+            if(!id){
+                alert('参数错误');return false;
+            }
+
+        $.ajax({
+            type : "POST", //提交方式
+            url : "{:url('admin/downZip')}",//路径
+            data : 'id='+id,//数据，这里使用的是Json格式进行传输
+            success : function(result){
+                var url = result.zipurl;
+                var form = $("<form target='_blank'></form>").attr("action", url).attr("method", "post");
+                form.append($("<input></input>").attr("type", "hidden").attr("name", "id").attr("value", id));
+                form.appendTo('body').submit().remove();
+            }
+        });
+    }
+    //已下载
+    function downedZip(id){
+            if(!id){
+                alert('参数错误');return false;
+            }
+            var url = "{:url('admin/downedZip')}";
+            $.ajax({
+                type : "POST", //提交方式
+                url : url,//路径
+                data : 'id='+id,//数据，这里使用的是Json格式进行传输
+                success : function(result){
+                    if( result.succ == 1){
+                        window.location.reload();
+                    }else{
+                        layer.msg('更改状态失败');
+                    }
+                }
+            });
+    }
+    //已下载
+    function nodownedZip(id){
+            if(!id){
+                alert('参数错误');return false;
+            }
+            var url = "{:url('admin/nodownedZip')}";
+            $.ajax({
+                type : "POST", //提交方式
+                url : url,//路径
+                data : 'id='+id,//数据，这里使用的是Json格式进行传输
+                success : function(result){
+                    if( result.succ == 1){
+                        window.location.reload();
+                    }else{
+                        layer.msg('更改状态失败');
+                    }
+                }
+            });
+    }
+    //删除
+    function delZip(id){
+            if(!id){
+                alert('参数错误');return false;
+            }
+            var url = "{:url('admin/delZip')}";
+            $.ajax({
+                type : "POST", //提交方式
+                url : url,//路径
+                data :  'id='+id,
+                success : function(result){
+                    if( result.succ == 1){
+                        window.location.reload();
+                    }else{
+                        layer.msg('删除失败');
+                    }
+                }
+            });
+    }
+
+
+
+    //执行删除文件夹操作
+    //下载
+    function del_rubbish(){
+        $.ajax({
+            type : "POST", //提交方式
+            dataType:"json",
+            url : "/del_10file.php",//路径
+            success : function(result){
+                if(result.succ){
+                    layui.layer.msg('删除成功')
+                }
+                parent.window.location.reload();
+            },
+            error:function() {
+                parent.window.location.reload();
+            }
+        });
+    }
+
+</script>
+<script>
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#end' //指定元素
+        });
+    });
+
+//
+//    $(function(){
+//        $(".folder").on('click',function(){
+//            var id = $(this)[0].dataset.id;
+//            var url = "{:url('admin/downZip')}";
+//            var form = $("<form></form>").attr("action", url).attr("method", "post");
+//            form.append($("<input></input>").attr("type", "hidden").attr("name", "id").attr("value", id));
+//            form.appendTo('body').submit().remove();
+//        })
+//    });
+
+
+</script>
+
+</body>
+
+</html>
